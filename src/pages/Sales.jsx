@@ -174,8 +174,8 @@ const Sales = () => {
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className={`px-6 py-3 rounded-2xl font-bold transition-all shadow-lg active:scale-95 ${showForm
-                            ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 shadow-slate-200'
-                            : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-200'
+                        ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 shadow-slate-200'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-200'
                         }`}
                 >
                     {showForm ? 'বাতিল করুন' : '+ নতুন বিক্রয়'}
@@ -187,66 +187,67 @@ const Sales = () => {
 
             {/* Sale Form */}
             {showForm && (
-                <div className="premium-card p-8 animate-fade-in border-slate-200">
-                    <h3 className="text-lg font-black text-slate-800 mb-8 flex items-center gap-2">
-                        <span className="w-1.5 h-6 bg-emerald-600 rounded-full"></span>
-                        নতুন মেমো তৈরি করুন
-                    </h3>
-
-                    <form onSubmit={handleSubmit} className="space-y-10">
-                        {/* Date */}
-                        <div className="max-w-xs">
-                            <label className="block text-sm font-bold text-slate-700 mb-2 px-1">
-                                বিক্রয়ের তারিখ
-                            </label>
-                            <input
-                                type="date"
-                                value={formData.saleDate}
-                                onChange={(e) => setFormData({ ...formData, saleDate: e.target.value })}
-                                required
-                                className="w-full bg-slate-50 border-slate-200 focus:bg-white transition-all shadow-sm"
-                            />
+                <div className="premium-card p-4 sm:p-6 animate-fade-in border-slate-200 bg-white">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Header & Date Row */}
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                            <h3 className="text-base font-black text-slate-800 flex items-center gap-2">
+                                <span className="w-1.5 h-5 bg-emerald-600 rounded-full"></span>
+                                নতুন মেমো তৈরি করুন
+                            </h3>
+                            <div className="flex items-center gap-3">
+                                <label className="text-xs font-bold text-slate-500 whitespace-nowrap">বিক্রয়ের তারিখ:</label>
+                                <input
+                                    type="date"
+                                    value={formData.saleDate}
+                                    onChange={(e) => setFormData({ ...formData, saleDate: e.target.value })}
+                                    required
+                                    className="py-1.5 px-3 text-sm bg-slate-50 border-slate-200 rounded-xl focus:bg-white transition-all shadow-sm outline-none"
+                                />
+                            </div>
                         </div>
 
-                        {/* Products */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h4 className="font-bold text-slate-800">পণ্য নির্বাচন করুন</h4>
+                        {/* Products Section */}
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between px-1">
+                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">পণ্য নির্বাচন করুন</h4>
                                 <button
                                     type="button"
                                     onClick={addProductRow}
-                                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 px-3 py-1.5 bg-emerald-50 rounded-full transition-colors"
+                                    className="text-[10px] font-black text-emerald-600 hover:bg-emerald-50 px-3 py-1 rounded-full transition-colors border border-emerald-100"
                                 >
-                                    + পণ্য যুক্ত করুন
+                                    + পণ্য যোগ করুন
                                 </button>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                                 {formData.products.map((item, index) => {
                                     const selectedProduct = products.find(p => p._id === item.product);
                                     const availableStock = selectedProduct ? selectedProduct.currentStock : 0;
 
                                     return (
-                                        <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50/50 p-6 rounded-3xl border border-slate-100 relative group transition-all hover:bg-slate-50">
-                                            <div className="md:col-span-12 lg:col-span-5">
-                                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 px-1">পণ্য (বর্তমান স্টক দেখুন)</label>
+                                        <div key={index} className="flex flex-col md:flex-row gap-3 bg-slate-50/50 p-3 rounded-2xl border border-slate-100 items-end transition-all hover:bg-slate-50">
+                                            <div className="flex-1 w-full">
+                                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 px-1">
+                                                    পণ্য {selectedProduct && <span className="text-emerald-500 lowercase">(স্টক: {availableStock} {selectedProduct.unit})</span>}
+                                                </label>
                                                 <select
                                                     value={item.product}
                                                     onChange={(e) => updateProductRow(index, 'product', e.target.value)}
                                                     required
-                                                    className="w-full bg-white border-slate-200"
+                                                    className="w-full text-sm py-2 px-3 bg-white border-slate-200 rounded-xl outline-none"
                                                 >
                                                     <option value="">সিলেক্ট করুন</option>
                                                     {products.map(p => (
                                                         <option key={p._id} value={p._id}>
-                                                            {p.name} ({p.unit}) — স্টক: {p.currentStock}
+                                                            {p.name} — ({p.currentStock} {p.unit})
                                                         </option>
                                                     ))}
                                                 </select>
                                             </div>
 
-                                            <div className="md:col-span-6 lg:col-span-3">
-                                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 px-1">পরিমাণ (সর্বোচ্চ: {availableStock})</label>
+                                            <div className="w-full md:w-32">
+                                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 px-1">পরিমাণ</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
@@ -254,30 +255,30 @@ const Sales = () => {
                                                     onChange={(e) => updateProductRow(index, 'quantity', e.target.value)}
                                                     required
                                                     max={availableStock}
-                                                    className="w-full bg-white border-slate-200"
+                                                    className="w-full text-sm py-2 px-3 bg-white border-slate-200 rounded-xl outline-none"
                                                     placeholder="0.00"
                                                 />
                                             </div>
 
-                                            <div className="md:col-span-6 lg:col-span-3">
-                                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 px-1">বিক্রয়মূল্য (৳)</label>
+                                            <div className="w-full md:w-32">
+                                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1 px-1">বিক্রয়মূল্য</label>
                                                 <input
                                                     type="number"
                                                     step="0.01"
                                                     value={item.salePrice}
                                                     onChange={(e) => updateProductRow(index, 'salePrice', e.target.value)}
                                                     required
-                                                    className="w-full bg-white border-slate-200"
+                                                    className="w-full text-sm py-2 px-3 bg-white border-slate-200 rounded-xl outline-none"
                                                     placeholder="0.00"
                                                 />
                                             </div>
 
-                                            <div className="md:col-span-12 lg:col-span-1 flex items-end justify-center pb-2">
+                                            <div className="flex-shrink-0">
                                                 {formData.products.length > 1 && (
                                                     <button
                                                         type="button"
                                                         onClick={() => removeProductRow(index)}
-                                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-accent-500 hover:bg-accent-50 hover:text-accent-600 transition-colors"
+                                                        className="w-9 h-9 flex items-center justify-center text-red-400 hover:bg-red-50 rounded-xl transition-colors"
                                                     >
                                                         🗑️
                                                     </button>
@@ -289,93 +290,75 @@ const Sales = () => {
                             </div>
                         </div>
 
-                        {/* Other Expenses */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h4 className="font-bold text-slate-800">অতিরিক্ত খরচ (যদি থাকে)</h4>
-                                <button
-                                    type="button"
-                                    onClick={addExpenseRow}
-                                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 px-3 py-1.5 bg-blue-50 rounded-full transition-colors"
-                                >
-                                    + খরচ যুক্ত করুন
-                                </button>
-                            </div>
-
-                            {formData.otherExpenses.length > 0 && (
-                                <div className="space-y-3">
+                        {/* Other Expenses Simplified */}
+                        <div className="pt-2">
+                            <details className="group">
+                                <summary className="list-none cursor-pointer flex items-center gap-2 text-xs font-black text-slate-400 hover:text-slate-600 transition-colors">
+                                    <span className="group-open:rotate-90 transition-transform">▶</span>
+                                    অতিরিক্ত খরচ (প্যাকিং, ডেলিভারি ইত্যাদি)
+                                </summary>
+                                <div className="mt-3 space-y-2 pl-4 border-l-2 border-slate-100">
                                     {formData.otherExpenses.map((expense, index) => (
-                                        <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50/50 p-6 rounded-3xl border border-slate-100 items-end">
-                                            <div className="md:col-span-7">
-                                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 px-1">বিবরণ (যেমন: প্যাকিং, লেবার)</label>
-                                                <input
-                                                    type="text"
-                                                    value={expense.name}
-                                                    onChange={(e) => updateExpenseRow(index, 'name', e.target.value)}
-                                                    className="w-full bg-white border-slate-200"
-                                                    placeholder="খরচের নাম"
-                                                />
-                                            </div>
-
-                                            <div className="md:col-span-4">
-                                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 px-1">পরিমাণ (৳)</label>
-                                                <input
-                                                    type="number"
-                                                    step="0.01"
-                                                    value={expense.amount}
-                                                    onChange={(e) => updateExpenseRow(index, 'amount', e.target.value)}
-                                                    className="w-full bg-white border-slate-200"
-                                                    placeholder="0.00"
-                                                />
-                                            </div>
-
-                                            <div className="md:col-span-1 flex justify-center pb-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeExpenseRow(index)}
-                                                    className="w-10 h-10 rounded-xl flex items-center justify-center text-accent-500 hover:bg-accent-50 hover:text-accent-600 transition-colors"
-                                                >
-                                                    🗑️
-                                                </button>
-                                            </div>
+                                        <div key={index} className="flex gap-3 items-center">
+                                            <input
+                                                type="text"
+                                                value={expense.name}
+                                                onChange={(e) => updateExpenseRow(index, 'name', e.target.value)}
+                                                className="flex-1 text-sm py-1.5 px-3 bg-slate-50 border-slate-200 rounded-lg outline-none"
+                                                placeholder="বিবরণ"
+                                            />
+                                            <input
+                                                type="number"
+                                                value={expense.amount}
+                                                onChange={(e) => updateExpenseRow(index, 'amount', e.target.value)}
+                                                className="w-24 text-sm py-1.5 px-3 bg-slate-50 border-slate-200 rounded-lg outline-none"
+                                                placeholder="৳ 0.00"
+                                            />
+                                            <button type="button" onClick={() => removeExpenseRow(index)} className="text-red-400 hover:text-red-600">×</button>
                                         </div>
                                     ))}
+                                    <button
+                                        type="button"
+                                        onClick={addExpenseRow}
+                                        className="text-[10px] font-bold text-blue-600 hover:underline"
+                                    >
+                                        + খরচ যোগ করুন
+                                    </button>
                                 </div>
-                            )}
+                            </details>
                         </div>
 
-                        {/* Total Summary */}
-                        <div className="bg-slate-900 rounded-[2rem] p-8 text-white shadow-2xl shadow-slate-200">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-                                <div className="space-y-1">
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">পণ্যের মোট মূল্য</p>
-                                    <p className="text-2xl font-black">৳ {formatCurrency(totals.productTotal)}</p>
+                        {/* Summary & Actions */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-900 rounded-2xl p-4 text-white">
+                            <div className="flex gap-6 text-center md:text-left">
+                                <div>
+                                    <p className="text-[9px] text-slate-400 font-bold uppercase">পণ্যের মূল্য</p>
+                                    <p className="font-black text-sm">৳ {formatCurrency(totals.productTotal)}</p>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">অন্যান্য খরচ</p>
-                                    <p className="text-2xl font-black">৳ {formatCurrency(totals.expenseTotal)}</p>
+                                <div>
+                                    <p className="text-[9px] text-slate-400 font-bold uppercase">অন্যান্য</p>
+                                    <p className="font-black text-sm">৳ {formatCurrency(totals.expenseTotal)}</p>
                                 </div>
-                                <div className="space-y-1 border-slate-800 md:border-l md:pl-8">
-                                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest">সর্বমোট বিল</p>
-                                    <p className="text-4xl font-black text-emerald-400">৳ {formatCurrency(totals.grandTotal)}</p>
+                                <div className="md:border-l border-slate-700 md:pl-6">
+                                    <p className="text-[9px] text-emerald-400 font-bold uppercase">সর্বমোট বিল</p>
+                                    <p className="font-black text-xl text-emerald-400">৳ {formatCurrency(totals.grandTotal)}</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="flex gap-4 pt-4">
-                            <button
-                                type="submit"
-                                className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 active:scale-[0.98] transition-all shadow-xl shadow-slate-200"
-                            >
-                                মেমো তৈরি করুন
-                            </button>
-                            <button
-                                type="button"
-                                onClick={resetForm}
-                                className="px-8 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold hover:bg-slate-200 transition-all"
-                            >
-                                বাতিল
-                            </button>
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    type="button"
+                                    onClick={resetForm}
+                                    className="flex-1 md:flex-none px-6 py-2.5 text-xs font-black bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-all border border-slate-700"
+                                >
+                                    বাতিল
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-3 md:flex-none px-10 py-2.5 text-xs font-black bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20"
+                                >
+                                    মেমো সেভ করুন
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

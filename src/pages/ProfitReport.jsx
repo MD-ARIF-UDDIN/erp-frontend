@@ -93,7 +93,7 @@ const ProfitReport = () => {
                             key={idx}
                             onClick={idx === 0 ? handleReset : idx === 1 ? getThisWeek : getThisMonth}
                             className={`px-3 py-1 rounded-md text-[10px] font-black transition-all ${(idx === 0 && !dateRange.startDate) || (idx === 1 && dateRange.startDate && !dateRange.endDate.includes('-31')) || (idx === 2 && dateRange.startDate && dateRange.endDate.includes('-'))
-                                    ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-50'
+                                ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-50'
                                 }`}
                         >
                             {label}
@@ -194,13 +194,14 @@ const ProfitReport = () => {
                         <div className="md:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                             <div className="p-3 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                                 <h3 className="text-xs font-black text-slate-800">পণ্য-ভিক্তিক বিস্তারিত তথ্য</h3>
-                                <span className="text-[9px] bg-white px-2 py-0.5 rounded border text-slate-400 font-black">Quantity | Sales | Profit</span>
+                                <span className="text-[9px] bg-white px-2 py-0.5 rounded border text-slate-400 font-black">Purchase | Sale | Profit</span>
                             </div>
                             <div className="max-h-[350px] overflow-y-auto">
                                 <table className="w-full text-left text-[10px] border-collapse">
                                     <thead className="sticky top-0 bg-white border-b border-slate-200 z-10 shadow-sm">
                                         <tr className="text-[8px] text-slate-400 uppercase font-black tracking-widest bg-white">
                                             <th className="px-4 py-3">পণ্যের নাম</th>
+                                            <th className="px-4 py-3 text-right">কেনা (Qty)</th>
                                             <th className="px-4 py-3 text-right">বিক্রীত (Qty)</th>
                                             <th className="px-4 py-3 text-right">মোট বিক্রয়</th>
                                             <th className="px-4 py-3 text-right">লাভ/ক্ষতি</th>
@@ -211,7 +212,8 @@ const ProfitReport = () => {
                                             report.productBreakdown.map((item, idx) => (
                                                 <tr key={idx} className="hover:bg-slate-50 transition-colors group">
                                                     <td className="px-4 py-3 font-bold text-slate-700 group-hover:text-indigo-600">{item.name}</td>
-                                                    <td className="px-4 py-3 text-right text-slate-500 font-black">{item.quantity} {item.unit || ''}</td>
+                                                    <td className="px-4 py-3 text-right text-slate-400 font-bold">{item.purchaseQty} {item.unit || ''}</td>
+                                                    <td className="px-4 py-3 text-right text-indigo-600 font-black">{item.quantity} {item.unit || ''}</td>
                                                     <td className="px-4 py-3 text-right font-black text-slate-900 tracking-tight">৳{formatCurrency(item.sales)}</td>
                                                     <td className={`px-4 py-3 text-right font-black ${item.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                                                         ৳{formatCurrency(Math.abs(item.profit))}
@@ -220,7 +222,7 @@ const ProfitReport = () => {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="4" className="px-4 py-12 text-center text-slate-400 font-black italic space-y-2">
+                                                <td colSpan="5" className="px-4 py-12 text-center text-slate-400 font-black italic space-y-2">
                                                     <div className="text-2xl">🤷‍♂️</div>
                                                     <div>কোনো লেনদেনের তথ্য পাওয়া যায়নি।</div>
                                                 </td>
@@ -231,7 +233,7 @@ const ProfitReport = () => {
                             </div>
                             {report.productBreakdown?.length > 0 && (
                                 <div className="p-2 border-t border-slate-100 bg-slate-50/30 text-[8px] text-slate-400 font-bold text-center italic">
-                                    ※ শুধুমাত্র বিক্রয় হওয়া পণ্যগুলো এখানে দেখানো হচ্ছে।
+                                    ※ এই সময়ের মধ্যে কিনি অথবা বিক্রি হওয়া পণ্যগুলো এখানে দেখানো হচ্ছে।
                                 </div>
                             )}
                         </div>
