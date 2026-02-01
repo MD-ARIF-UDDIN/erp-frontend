@@ -11,6 +11,7 @@ const Sales = () => {
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [actionLoading, setActionLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         saleDate: getTodayDate(),
@@ -112,6 +113,7 @@ const Sales = () => {
             }
         }
 
+        setActionLoading(true);
         try {
             const submitData = {
                 saleDate: formData.saleDate,
@@ -134,6 +136,8 @@ const Sales = () => {
             loadData();
         } catch (err) {
             setError(err.response?.data?.message || 'একটি ত্রুটি ঘটেছে');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -142,12 +146,15 @@ const Sales = () => {
             return;
         }
 
+        setActionLoading(true);
         try {
             await saleService.delete(id);
             setSuccess('বিক্রয় মুছে ফেলা হয়েছে');
             loadData();
         } catch (err) {
             setError(err.response?.data?.message || 'মুছে ফেলতে ব্যর্থ হয়েছে');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -361,9 +368,17 @@ const Sales = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-3 md:flex-none px-10 py-2.5 text-xs font-black bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20"
+                                    disabled={actionLoading}
+                                    className="flex-3 md:flex-none px-10 py-2.5 text-xs font-black bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
-                                    মেমো সেভ করুন
+                                    {actionLoading ? (
+                                        <>
+                                            <span className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                                            <span>সেভ হচ্ছে...</span>
+                                        </>
+                                    ) : (
+                                        'মেমো সেভ করুন'
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -371,68 +386,124 @@ const Sales = () => {
                 </div>
             )}
 
-            {/* Sales List - Table Wise */}
-            <div className="premium-card overflow-hidden border-slate-200">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-slate-50/80 border-b border-slate-100">
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">তারিখ</th>
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">বিক্রীত পণ্য</th>
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">অন্যান্য খরচ</th>
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">মোট বিল</th>
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">অ্যাকশন</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {sales.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-20 text-center">
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-5xl mb-4">💰</span>
-                                            <p className="text-slate-400 font-bold">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি</p>
+            {/* Sales List - Responsive */}
+            <div className="space-y-4">
+                {/* Mobile View: Card List */}
+                <div className="grid grid-cols-1 gap-4 sm:hidden">
+                    {sales.length === 0 ? (
+                        <div className="premium-card p-10 text-center bg-white">
+                            <span className="text-4xl mb-3 block">💰</span>
+                            <p className="text-slate-400 font-bold">কোনো বিক্রয়ের রেকর্ড নেই</p>
+                        </div>
+                    ) : (
+                        sales.map((sale) => (
+                            <div key={sale._id} className="premium-card p-4 bg-white border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">তারিখ</p>
+                                        <p className="text-sm font-bold text-slate-700">{formatDate(sale.saleDate)}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">মোট বিল</p>
+                                        <p className="text-lg font-black text-emerald-600">৳ {formatCurrency(sale.totalSaleAmount)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">বিক্রীত পণ্য</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {sale.products.map((item, idx) => (
+                                                <span key={idx} className="inline-flex items-center px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-lg text-[11px] font-bold text-slate-600">
+                                                    {item.productName} × {item.quantity} {item.unit}
+                                                </span>
+                                            ))}
                                         </div>
-                                    </td>
+                                    </div>
+
+                                    <div className="flex justify-between items-center pt-3 border-t border-slate-50">
+                                        <div>
+                                            <span className="text-[10px] font-bold text-slate-400">অন্যান্য খরচ: </span>
+                                            <span className="text-xs font-bold text-slate-600">৳ {formatCurrency(sale.totalOtherExpenses || 0)}</span>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDelete(sale._id)}
+                                            disabled={actionLoading}
+                                            className="px-3 py-1.5 rounded-lg bg-accent-50 text-accent-600 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-transform disabled:opacity-50"
+                                        >
+                                            {actionLoading ? '⏳' : '🗑️'} মুছুন
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden sm:block premium-card overflow-hidden border-slate-200 bg-white">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/80 border-b border-slate-100">
+                                    <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">তারিখ</th>
+                                    <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">বিক্রীত পণ্য</th>
+                                    <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">অন্যান্য খরচ</th>
+                                    <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">মোট বিল</th>
+                                    <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">অ্যাকশন</th>
                                 </tr>
-                            ) : (
-                                sales.map((sale) => (
-                                    <tr key={sale._id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-5 whitespace-nowrap">
-                                            <span className="text-sm font-bold text-slate-700">{formatDate(sale.saleDate)}</span>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex flex-wrap gap-2">
-                                                {sale.products.map((item, idx) => (
-                                                    <span key={idx} className="inline-flex items-center px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 shadow-sm">
-                                                        {item.productName} × {item.quantity} {item.unit}
-                                                    </span>
-                                                ))}
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {sales.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-5xl mb-4">💰</span>
+                                                <p className="text-slate-400 font-bold">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি</p>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <span className="text-sm font-bold text-slate-500">
-                                                ৳ {formatCurrency(sale.totalOtherExpenses || 0)}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <span className="text-lg font-black text-emerald-600">
-                                                ৳ {formatCurrency(sale.totalSaleAmount)}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-center">
-                                            <button
-                                                onClick={() => handleDelete(sale._id)}
-                                                className="w-10 h-10 rounded-xl bg-accent-50 text-accent-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-100 active:scale-95 mx-auto"
-                                                title="মুছে ফেলুন"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ) : (
+                                    sales.map((sale) => (
+                                        <tr key={sale._id} className="hover:bg-slate-50/50 transition-colors group">
+                                            <td className="px-6 py-5 whitespace-nowrap">
+                                                <span className="text-sm font-bold text-slate-700">{formatDate(sale.saleDate)}</span>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex flex-wrap gap-2">
+                                                    {sale.products.map((item, idx) => (
+                                                        <span key={idx} className="inline-flex items-center px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 shadow-sm">
+                                                            {item.productName} × {item.quantity} {item.unit}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5 text-right">
+                                                <span className="text-sm font-bold text-slate-500">
+                                                    ৳ {formatCurrency(sale.totalOtherExpenses || 0)}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5 text-right">
+                                                <span className="text-xl font-black text-emerald-600">
+                                                    ৳ {formatCurrency(sale.totalSaleAmount)}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5 text-center">
+                                                <button
+                                                    onClick={() => handleDelete(sale._id)}
+                                                    disabled={actionLoading}
+                                                    className="w-10 h-10 rounded-xl bg-accent-50 text-accent-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-100 active:scale-95 mx-auto disabled:opacity-50"
+                                                    title="মুছে ফেলুন"
+                                                >
+                                                    {actionLoading ? '⏳' : '🗑️'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

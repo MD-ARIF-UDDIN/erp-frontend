@@ -11,6 +11,7 @@ const Products = () => {
     const [editingProduct, setEditingProduct] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [actionLoading, setActionLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         unit: ''
@@ -36,6 +37,7 @@ const Products = () => {
         setError('');
         setSuccess('');
 
+        setActionLoading(true);
         try {
             if (editingProduct) {
                 await productService.update(editingProduct._id, formData);
@@ -49,6 +51,8 @@ const Products = () => {
             loadProducts();
         } catch (err) {
             setError(err.response?.data?.message || 'একটি ত্রুটি ঘটেছে');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -66,12 +70,15 @@ const Products = () => {
             return;
         }
 
+        setActionLoading(true);
         try {
             await productService.delete(id);
             setSuccess('পণ্য মুছে ফেলা হয়েছে');
             loadProducts();
         } catch (err) {
             setError(err.response?.data?.message || 'মুছে ফেলতে ব্যর্থ হয়েছে');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -136,9 +143,17 @@ const Products = () => {
                         <div className="flex gap-3">
                             <button
                                 type="submit"
-                                className="flex-1 bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                                disabled={actionLoading}
+                                className="flex-1 bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                {editingProduct ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+                                {actionLoading ? (
+                                    <>
+                                        <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                                        <span>প্রসেসিং...</span>
+                                    </>
+                                ) : (
+                                    editingProduct ? 'আপডেট করুন' : 'সংরক্ষণ করুন'
+                                )}
                             </button>
                             <button
                                 type="button"
@@ -197,15 +212,17 @@ const Products = () => {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => handleEdit(product)}
-                                    className="flex-1 bg-blue-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                                    disabled={actionLoading}
+                                    className="flex-1 bg-blue-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
                                 >
                                     সম্পাদনা
                                 </button>
                                 <button
                                     onClick={() => handleDelete(product._id)}
-                                    className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                                    disabled={actionLoading}
+                                    className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
                                 >
-                                    মুছুন
+                                    {actionLoading ? 'মুছছে...' : 'মুছুন'}
                                 </button>
                             </div>
                         </div>

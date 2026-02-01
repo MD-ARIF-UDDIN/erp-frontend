@@ -33,7 +33,7 @@ const Dashboard = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h2 className="text-4xl font-black text-slate-900 tracking-tight font-bangla mb-2">
-                        স্বাগতম, <span className="text-indigo-600">{user?.name}</span>!
+                        স্বাগতম, <span className="text-indigo-600">নকি ভাই</span>!
                     </h2>
                     <p className="text-slate-600 font-bold text-lg">আপনার ব্যবসার আজকের সারসংক্ষেপ এক নজরে।</p>
                 </div>
@@ -45,50 +45,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Today's Key Metrics */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-8 bg-indigo-600 rounded-full"></div>
-                    <h3 className="text-2xl font-black text-slate-900 font-bangla">আজকের গতিবিধি</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-main">
-                    <div className="premium-card group bg-indigo-600 text-white border-0 shadow-indigo-100 overflow-hidden">
-                        <div className="absolute -right-4 -top-4 text-[12rem] opacity-10 font-black pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
-                            ৳
-                        </div>
-                        <div className="p-10 relative z-10">
-                            <p className="text-white opacity-90 text-sm font-black uppercase tracking-[0.2em] mb-4">আজকের মোট বিক্রয়</p>
-                            <h4 className="text-6xl font-black mb-8 leading-none">
-                                ৳ {formatCurrency(stats?.today?.sales || 0)}
-                            </h4>
-                            <div className="flex items-center gap-3">
-                                <div className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-widest border border-white/10">
-                                    {stats?.today?.salesCount || 0} টি রশিদ
-                                </div>
-                                <span className="text-white/80 text-xs font-bold font-bangla">লাইভ আপডেট হচ্ছে</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="premium-card group bg-white border-slate-200 overflow-hidden shadow-premium">
-                        <div className="absolute -right-6 -top-6 text-[12rem] opacity-[0.03] font-black pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                            🛒
-                        </div>
-                        <div className="p-10 relative z-10">
-                            <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em] mb-4">আজকের মোট ক্রয়</p>
-                            <h4 className="text-6xl font-black text-slate-900 mb-8 leading-none">
-                                ৳ {formatCurrency(stats?.today?.purchases || 0)}
-                            </h4>
-                            <div className="flex items-center gap-3">
-                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-black text-slate-700 uppercase tracking-widest border border-slate-200">
-                                    {stats?.today?.purchasesCount || 0} টি প্রোডাক্ট
-                                </div>
-                                <span className="text-slate-600 text-xs font-bold font-bangla underline decoration-slate-300">বিস্তারিত দেখুন</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Performance Grids */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

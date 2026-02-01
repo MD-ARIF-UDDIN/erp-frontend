@@ -15,6 +15,7 @@ const ProfitReport = () => {
         endDate: '',
         productId: ''
     });
+    const [activeTab, setActiveTab] = useState('all');
 
     useEffect(() => {
         loadInitialData();
@@ -57,7 +58,17 @@ const ProfitReport = () => {
     const handleReset = () => {
         const resetRange = { startDate: '', endDate: '', productId: '' };
         setDateRange(resetRange);
+        setActiveTab('all');
         loadReport('', '', ''); // This will trigger a full report
+    };
+
+    const getToday = () => {
+        const now = new Date();
+        const start = formatDateInput(now);
+        const end = formatDateInput(now);
+        setDateRange(prev => ({ ...prev, startDate: start, endDate: end }));
+        setActiveTab('today');
+        loadReport(start, end, dateRange.productId);
     };
 
     const getThisWeek = () => {
@@ -68,6 +79,7 @@ const ProfitReport = () => {
         const start = formatDateInput(startOfWeek);
         const end = formatDateInput(now);
         setDateRange(prev => ({ ...prev, startDate: start, endDate: end }));
+        setActiveTab('week');
         loadReport(start, end, dateRange.productId);
     };
 
@@ -77,6 +89,18 @@ const ProfitReport = () => {
         const start = formatDateInput(firstDay);
         const end = formatDateInput(now);
         setDateRange(prev => ({ ...prev, startDate: start, endDate: end }));
+        setActiveTab('thisMonth');
+        loadReport(start, end, dateRange.productId);
+    };
+
+    const getLastMonth = () => {
+        const now = new Date();
+        const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        const start = formatDateInput(firstDayLastMonth);
+        const end = formatDateInput(lastDayLastMonth);
+        setDateRange(prev => ({ ...prev, startDate: start, endDate: end }));
+        setActiveTab('lastMonth');
         loadReport(start, end, dateRange.productId);
     };
 
@@ -88,15 +112,21 @@ const ProfitReport = () => {
             <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2 mb-4">
                 <h2 className="text-xl font-black text-slate-900 tracking-tight">📊 লাভ-ক্ষতি রিপোর্ট</h2>
                 <div className="flex bg-white p-0.5 rounded-lg border border-slate-200 shadow-sm">
-                    {['সব সময়', 'সপ্তাহ', 'মাস'].map((label, idx) => (
+                    {[
+                        { label: 'সব সময়', key: 'all', action: handleReset },
+                        { label: 'আজ', key: 'today', action: getToday },
+                        { label: 'সপ্তাহ', key: 'week', action: getThisWeek },
+                        { label: 'এই মাস', key: 'thisMonth', action: getThisMonth },
+                        { label: 'গত মাস', key: 'lastMonth', action: getLastMonth },
+                    ].map((btn) => (
                         <button
-                            key={idx}
-                            onClick={idx === 0 ? handleReset : idx === 1 ? getThisWeek : getThisMonth}
-                            className={`px-3 py-1 rounded-md text-[10px] font-black transition-all ${(idx === 0 && !dateRange.startDate) || (idx === 1 && dateRange.startDate && !dateRange.endDate.includes('-31')) || (idx === 2 && dateRange.startDate && dateRange.endDate.includes('-'))
+                            key={btn.key}
+                            onClick={btn.action}
+                            className={`px-3 py-1 rounded-md text-[10px] font-black transition-all ${activeTab === btn.key
                                 ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-50'
                                 }`}
                         >
-                            {label}
+                            {btn.label}
                         </button>
                     ))}
                 </div>
@@ -126,7 +156,12 @@ const ProfitReport = () => {
                             {products.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
                         </select>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-2 bg-slate-900 text-white rounded-lg font-black text-[11px] hover:bg-slate-800 transition-all shadow-md">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        onClick={() => setActiveTab('custom')}
+                        className="w-full py-2 bg-slate-900 text-white rounded-lg font-black text-[11px] hover:bg-slate-800 transition-all shadow-md"
+                    >
                         {loading ? 'লোড হচ্ছে...' : 'রিপোর্ট দেখুন'}
                     </button>
                 </form>

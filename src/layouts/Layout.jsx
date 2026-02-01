@@ -30,8 +30,8 @@ const Layout = ({ children }) => {
                             <div className="w-12 h-12 bg-indigo-600 rounded-[1.25rem] flex items-center justify-center shadow-premium transform hover:rotate-6 transition-transform">
                                 <span className="text-white text-2xl">📊</span>
                             </div>
-                            <Link to="/" className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 font-bangla tracking-tight">
-                                {user?.businessName || 'রিটেইল ইআরপি'}
+                            <Link to="/" className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 font-main tracking-tight uppercase">
+                                OM DEALERSHIP
                             </Link>
                         </div>
 
