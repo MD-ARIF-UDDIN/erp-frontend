@@ -72,10 +72,11 @@ export const saleService = {
 };
 
 export const reportService = {
-    getProfitReport: async (startDate, endDate) => {
+    getProfitReport: async (startDate, endDate, productId) => {
         const params = {};
         if (startDate) params.startDate = startDate;
         if (endDate) params.endDate = endDate;
+        if (productId) params.productId = productId;
         const { data } = await api.get('/reports/profit', { params });
         return data;
     },
