@@ -178,11 +178,19 @@ const Products = () => {
                                         {product.currentStock} {product.unit}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">গড় ক্রয়মূল্য:</span>
-                                    <span className="text-sm font-semibold text-gray-800">
-                                        ৳ {formatCurrency(product.averagePurchasePrice)}
-                                    </span>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500 font-bold uppercase">গড় ক্রয়মূল্য:</span>
+                                        <span className="text-sm font-black text-slate-700">
+                                            ৳ {formatCurrency(product.averagePurchasePrice)}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500 font-bold uppercase">গড় বিক্রয়মূল্য:</span>
+                                        <span className="text-sm font-black text-indigo-600">
+                                            ৳ {formatCurrency(product.averageSalePrice || 0)}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 

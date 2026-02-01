@@ -138,7 +138,9 @@ const ProfitReport = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className={`col-span-2 p-5 rounded-xl text-white shadow-lg flex flex-col justify-center min-h-[110px] ${report.totalProfit >= 0 ? 'bg-indigo-600' : 'bg-red-600'} transition-all duration-500`}>
                             <p className="text-white/70 font-black uppercase text-[9px] mb-1 tracking-[0.15em]">
-                                {report.isProductFiltered ? 'আইটেম ফলাফল (ITEM PROFIT)' : 'ব্যবসায়িক নিট লাভ (NET PROFIT)'}
+                                {report.isProductFiltered
+                                    ? `আইটেম ফলাফল: ${products.find(p => p._id === dateRange.productId)?.name || 'পণ্য'}`
+                                    : 'ব্যবসায়িক নিট লাভ (NET PROFIT)'}
                             </p>
                             <h3 className="text-4xl font-black tracking-tighter">৳ {formatCurrency(Math.abs(report.totalProfit))}</h3>
                             {report.totalSale > 0 && (
@@ -192,39 +194,76 @@ const ProfitReport = () => {
 
                         {/* High Density Table */}
                         <div className="md:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                            <div className="p-3 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                                <h3 className="text-xs font-black text-slate-800">পণ্য-ভিক্তিক বিস্তারিত তথ্য</h3>
-                                <span className="text-[9px] bg-white px-2 py-0.5 rounded border text-slate-400 font-black">Purchase | Sale | Profit</span>
+                            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-sm font-black text-slate-800">📦 পণ্য-ভিক্তিক বিস্তারিত তথ্য</h3>
+                                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">সবগুলো পণ্যের আলাদা আলাদা লাভ-ক্ষতি ও স্টক।</p>
+                                </div>
+                                <span className="text-[9px] bg-white px-2 py-0.5 rounded border border-slate-200 text-indigo-600 font-black uppercase tracking-tight shadow-sm">
+                                    Total: {report.productBreakdown?.length || 0} Items
+                                </span>
                             </div>
-                            <div className="max-h-[350px] overflow-y-auto">
-                                <table className="w-full text-left text-[10px] border-collapse">
+                            <div className="max-h-[500px] overflow-y-auto">
+                                <table className="w-full text-left text-[11px] border-collapse">
                                     <thead className="sticky top-0 bg-white border-b border-slate-200 z-10 shadow-sm">
-                                        <tr className="text-[8px] text-slate-400 uppercase font-black tracking-widest bg-white">
-                                            <th className="px-4 py-3">পণ্যের নাম</th>
-                                            <th className="px-4 py-3 text-right">কেনা (Qty)</th>
-                                            <th className="px-4 py-3 text-right">বিক্রীত (Qty)</th>
-                                            <th className="px-4 py-3 text-right">মোট বিক্রয়</th>
-                                            <th className="px-4 py-3 text-right">লাভ/ক্ষতি</th>
+                                        <tr className="text-[9px] text-slate-400 uppercase font-black tracking-widest bg-white">
+                                            <th className="px-5 py-4">পণ্যের নাম ও স্টক</th>
+                                            <th className="px-4 py-4 text-right">কেনা (Qty)</th>
+                                            <th className="px-4 py-4 text-right">বিক্রী (Qty)</th>
+                                            <th className="px-4 py-4 text-right">বিক্রয় মূল্য</th>
+                                            <th className="px-5 py-4 text-right">লাভ/ক্ষতি</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
                                         {report.productBreakdown?.length > 0 ? (
                                             report.productBreakdown.map((item, idx) => (
-                                                <tr key={idx} className="hover:bg-slate-50 transition-colors group">
-                                                    <td className="px-4 py-3 font-bold text-slate-700 group-hover:text-indigo-600">{item.name}</td>
-                                                    <td className="px-4 py-3 text-right text-slate-400 font-bold">{item.purchaseQty} {item.unit || ''}</td>
-                                                    <td className="px-4 py-3 text-right text-indigo-600 font-black">{item.quantity} {item.unit || ''}</td>
-                                                    <td className="px-4 py-3 text-right font-black text-slate-900 tracking-tight">৳{formatCurrency(item.sales)}</td>
-                                                    <td className={`px-4 py-3 text-right font-black ${item.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                                        ৳{formatCurrency(Math.abs(item.profit))}
+                                                <tr key={idx} className="hover:bg-slate-50/80 transition-colors group">
+                                                    <td className="px-5 py-4 font-bold text-slate-700 group-hover:text-indigo-600">
+                                                        <div className="flex flex-col">
+                                                            <span>{item.name}</span>
+                                                            <span className={`text-[9px] font-black mt-1 px-1.5 py-0.5 rounded-sm w-fit ${item.currentStock > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                                                                স্টক: {item.currentStock} {item.unit || ''}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-slate-500 font-bold">{item.purchaseQty} {item.unit || ''}</span>
+                                                            <span className="text-[9px] text-slate-400 font-bold italic">Avg: ৳{formatCurrency(item.avgPurchase || 0)}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-indigo-600 font-black">{item.quantity} {item.unit || ''}</span>
+                                                            <span className="text-[9px] text-indigo-300 font-bold px-1.5 bg-indigo-50 rounded-full w-fit ml-auto">বিক্রীত</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-4 text-right">
+                                                        <div className="flex flex-col">
+                                                            <span className="font-black text-slate-900 tracking-tight">৳{formatCurrency(item.sales)}</span>
+                                                            <span className="text-[9px] text-slate-400 font-bold italic">Avg: ৳{formatCurrency(item.avgSale || 0)}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-5 py-4 text-right">
+                                                        <div className="flex flex-col items-end">
+                                                            <span className={`font-black ${item.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                                                {item.profit >= 0 ? '+' : ''}৳{formatCurrency(Math.abs(item.profit))}
+                                                            </span>
+                                                            {item.sales > 0 && (
+                                                                <span className="text-[9px] text-slate-400 font-bold">
+                                                                    {((item.profit / item.sales) * 100).toFixed(1)}% মার্জিন
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="5" className="px-4 py-12 text-center text-slate-400 font-black italic space-y-2">
-                                                    <div className="text-2xl">🤷‍♂️</div>
-                                                    <div>কোনো লেনদেনের তথ্য পাওয়া যায়নি।</div>
+                                                <td colSpan="5" className="px-4 py-16 text-center text-slate-400 font-black italic space-y-4">
+                                                    <div className="text-5xl">📦</div>
+                                                    <div className="text-lg">কোনো পণ্যের বিবরণ পাওয়া যায়নি</div>
+                                                    <p className="text-sm font-bold opacity-60">ফেল্টার পরিবর্তন করে আবার চেষ্টা করুন।</p>
                                                 </td>
                                             </tr>
                                         )}
@@ -232,8 +271,8 @@ const ProfitReport = () => {
                                 </table>
                             </div>
                             {report.productBreakdown?.length > 0 && (
-                                <div className="p-2 border-t border-slate-100 bg-slate-50/30 text-[8px] text-slate-400 font-bold text-center italic">
-                                    ※ এই সময়ের মধ্যে কিনি অথবা বিক্রি হওয়া পণ্যগুলো এখানে দেখানো হচ্ছে।
+                                <div className="p-3 border-t border-slate-100 bg-slate-50/30 text-[9px] text-slate-400 font-bold text-center italic">
+                                    ※ এই তালিকায় শুধুমাত্র কেনা অথবা বিক্রি হওয়া এবং স্টকে থাকা পণ্যগুলো দেখানো হচ্ছে।
                                 </div>
                             )}
                         </div>

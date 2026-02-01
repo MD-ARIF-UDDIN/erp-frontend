@@ -265,42 +265,49 @@ const Purchases = () => {
                             </div>
                         </div>
 
-                        {/* Other Expenses Simplified */}
-                        <div className="pt-2">
-                            <details className="group">
-                                <summary className="list-none cursor-pointer flex items-center gap-2 text-xs font-black text-slate-400 hover:text-slate-600 transition-colors">
-                                    <span className="group-open:rotate-90 transition-transform">▶</span>
-                                    অন্যান্য খরচ (জ্বালানি, লেবার ইত্যাদি)
-                                </summary>
-                                <div className="mt-3 space-y-2 pl-4 border-l-2 border-slate-100">
-                                    {formData.otherExpenses.map((expense, index) => (
-                                        <div key={index} className="flex gap-3 items-center">
-                                            <input
-                                                type="text"
-                                                value={expense.name}
-                                                onChange={(e) => updateExpenseRow(index, 'name', e.target.value)}
-                                                className="flex-1 text-sm py-1.5 px-3 bg-slate-50 border-slate-200 rounded-lg outline-none"
-                                                placeholder="খরচের বিবরণ"
-                                            />
-                                            <input
-                                                type="number"
-                                                value={expense.amount}
-                                                onChange={(e) => updateExpenseRow(index, 'amount', e.target.value)}
-                                                className="w-24 text-sm py-1.5 px-3 bg-slate-50 border-slate-200 rounded-lg outline-none"
-                                                placeholder="৳ 0.00"
-                                            />
-                                            <button type="button" onClick={() => removeExpenseRow(index)} className="text-red-400 hover:text-red-600">×</button>
-                                        </div>
-                                    ))}
-                                    <button
-                                        type="button"
-                                        onClick={addExpenseRow}
-                                        className="text-[10px] font-bold text-blue-600 hover:underline"
-                                    >
-                                        + খরচ যোগ করুন
-                                    </button>
-                                </div>
-                            </details>
+                        {/* Other Expenses Visible */}
+                        <div className="pt-2 space-y-3">
+                            <div className="flex items-center justify-between px-1">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">অন্যান্য খরচ (জ্বালানি, লেবার ইত্যাদি)</h4>
+                                <button
+                                    type="button"
+                                    onClick={addExpenseRow}
+                                    className="text-[10px] font-bold text-blue-600 hover:bg-blue-50 px-2 py-0.5 rounded-lg transition-colors"
+                                >
+                                    + খরচ যোগ করুন
+                                </button>
+                            </div>
+
+                            <div className="space-y-2">
+                                {formData.otherExpenses.map((expense, index) => (
+                                    <div key={index} className="flex gap-3 items-center bg-slate-50/30 p-2 rounded-xl border border-slate-100">
+                                        <input
+                                            type="text"
+                                            value={expense.name}
+                                            onChange={(e) => updateExpenseRow(index, 'name', e.target.value)}
+                                            className="flex-1 text-sm py-1.5 px-3 bg-white border-slate-200 rounded-lg outline-none"
+                                            placeholder="খরচের বিবরণ"
+                                        />
+                                        <input
+                                            type="number"
+                                            value={expense.amount}
+                                            onChange={(e) => updateExpenseRow(index, 'amount', e.target.value)}
+                                            className="w-24 text-sm py-1.5 px-3 bg-white border-slate-200 rounded-lg outline-none"
+                                            placeholder="৳ 0"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeExpenseRow(index)}
+                                            className="w-8 h-8 flex items-center justify-center text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                {formData.otherExpenses.length === 0 && (
+                                    <p className="text-[10px] text-slate-300 italic px-2">অতিরিক্ত কোনো খরচ নেই।</p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Summary & Actions */}
